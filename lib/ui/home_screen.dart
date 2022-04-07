@@ -1,8 +1,37 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'dart:convert';
 
-class HomeScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:image_search/model/photo.dart';
+import 'package:image_search/ui/widget/photo_widget.dart';
+import 'package:http/http.dart' as http;
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _controller = TextEditingController();
+
+   List<Photo> _photos = [];
+
+  Future<List<Photo>> fetch(String query) async {
+    var url = Uri.parse(
+        "https://pixabay.com/api/?key=26557814-c80b420be7d3574e7dc35d5af&q=$query&image_type=photo&pretty=true");
+    final response = await http.get(url);
+
+    Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+    Iterable hits = jsonResponse['hits'];
+    return hits.map((el) => Photo.fromJson(el)).toList();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,34 +50,35 @@ class HomeScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
+              controller: _controller,
               decoration: InputDecoration(
                   border: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(10.0)),
                   ),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.search),
-                    onPressed: () {},
+                    onPressed: () async {
+                      final photos = await fetch(_controller.text);
+                      setState(() {
+                        _photos = photos;
+                      });
+                    },
                   )),
             ),
           ),
           Expanded(
             child: GridView.builder(
-              padding: const EdgeInsets.all(16.0),
-                itemCount: 10,
+                padding: const EdgeInsets.all(16.0),
+                itemCount: _photos.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                 ),
                 itemBuilder: (context, index) {
-                  return Container(
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                        image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: NetworkImage(
-                          'https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/957/90f9ce2d481cbb64bed3684c254f5166_res.png'),
-                    )),
+                  final photo = _photos[index];
+                  return PhotoWidget(
+                    photo: photo,
                   );
                 }),
           )
