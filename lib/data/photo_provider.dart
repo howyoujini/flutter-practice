@@ -13,20 +13,28 @@
 //   }
 // }
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:image_search/data/api.dart';
+import 'package:image_search/model/photo.dart';
 
 class PhotoProvider extends InheritedWidget {
   final PixabayApi api;
+  List<Photo> _photos = [];
 
-  const PhotoProvider({
+  final _photoStreamController = StreamController<List<Photo>>();
+  Stream<List<Photo>> get photoStream => _photoStreamController.stream;
+
+  PhotoProvider({
     Key? key,
     required Widget child,
     required this.api,
   }) : super(key: key, child: child);
 
-  static PhotoProvider of(BuildContext context){
-    final PhotoProvider? result = context.dependOnInheritedWidgetOfExactType<PhotoProvider>();
+  static PhotoProvider of(BuildContext context) {
+    final PhotoProvider? result =
+        context.dependOnInheritedWidgetOfExactType<PhotoProvider>();
 
     assert(result != null, "No PixabayApi found in context");
     return result!;
