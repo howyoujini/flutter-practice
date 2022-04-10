@@ -41,6 +41,11 @@ class PhotoProvider extends InheritedWidget {
     // null 임을 보증하는 느낌표를 붙인다. 결국 null 을 리턴한다는 뜻.
   }
 
+  void fetch(String query) async {
+    final result = await api.fetch(query);
+    _photoStreamController.add(result);
+  }
+
   @override
   bool updateShouldNotify(PhotoProvider oldWidget) {
     return oldWidget.api != api;
