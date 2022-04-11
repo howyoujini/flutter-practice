@@ -5,7 +5,7 @@ import 'package:image_search/data/photo_provider.dart';
 import 'package:image_search/model/photo.dart';
 import 'package:image_search/ui/widget/photo_widget.dart';
 
-import '../data/api.dart';
+import '../data/pixabay_api.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
