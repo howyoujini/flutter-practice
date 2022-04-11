@@ -13,22 +13,16 @@
 //   }
 // }
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:image_search/data/api.dart';
-import 'package:image_search/model/photo.dart';
+import 'package:image_search/ui/home_view_model.dart';
 
 class PhotoProvider extends InheritedWidget {
-  final PixabayApi api;
+  final HomeViewModel viewModel;
 
-  final _photoStreamController = StreamController<List<Photo>>()..add([]);
-  Stream<List<Photo>> get photoStream => _photoStreamController.stream;
-
-  PhotoProvider({
+  const PhotoProvider({
     Key? key,
     required Widget child,
-    required this.api,
+    required this.viewModel,
   }) : super(key: key, child: child);
 
   static PhotoProvider of(BuildContext context) {
@@ -40,13 +34,8 @@ class PhotoProvider extends InheritedWidget {
     // null 임을 보증하는 느낌표를 붙인다. 결국 null 을 리턴한다는 뜻.
   }
 
-  Future<void> fetch(String query) async {
-    final result = await api.fetch(query);
-    _photoStreamController.add(result);
-  }
-
   @override
   bool updateShouldNotify(PhotoProvider oldWidget) {
-    return oldWidget.api != api;
+    return true;
   }
 }
