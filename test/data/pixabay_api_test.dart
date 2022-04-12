@@ -21,7 +21,7 @@ void main() {
 
     expect(result.first.id, 410311);
 
-    verify(client.get(Uri.parse(
+    verifyNever(client.get(Uri.parse(
         '${PixabayApi.baseUrl}?key=${PixabayApi.key}&q=iphone&image_type=photo&pretty=true')));
   });
 }
